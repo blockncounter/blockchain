@@ -25,6 +25,8 @@ coverage
 # nyc test coverage
 .nyc_output
 
+# Jest
+
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -40,6 +42,32 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+/benchmarks/*/node_modules/
+/packages/*/build/
+/packages/*/dist/
+/packages/*/coverage/
+/packages/*/node_modules/
+
+# Jest
+/reports/*
+crowdin-cli.jar
+packages/jest-worker/src/workers/__tests__/__temp__
+
+/e2e/*/node_modules
+/e2e/*/.pnp
+/e2e/*/.pnp.js
+!/e2e/presets/json/node_modules
+!/e2e/presets/js/node_modules
+/e2e/transform/*/coverage
+/e2e/transform/*/node_modules
+
+/website/.docusaurus
+/website/.cache-loader
+/website/build
+/website/backers.json
+/website/node_modules
+/website/yarn.lock
+/website/i18n/*
 
 # TypeScript v1 declaration files
 typings/
@@ -102,3 +130,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+package-lock.json
+api-extractor.json
