@@ -25,6 +25,18 @@ describe('Blockchain tests', () => {
     expect(result.success).toBeFalsy()
   })
 
+  it('should return a block', () => {
+    const blockchain = new Blockchain()
+    const block = blockchain.getBlock(blockchain.getLastBlock().hash)
+    expect(block).toBeTruthy()
+  })
+
+  it('should NOT return a block', () => {
+    const blockchain = new Blockchain()
+    const block = blockchain.getBlock(blockchain.getLastBlock().data)
+    expect(block).toBeFalsy()
+  })
+
   it('should be valid', () => {
     const blockchain = new Blockchain()
     blockchain.addBlock(new Block(1, blockchain.getLastBlock().hash, 'abc'))
