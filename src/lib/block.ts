@@ -10,6 +10,8 @@ export default class Block {
   hash: string;
   previousHash: string;
   data: string;
+  nonce: number;
+  miner: string;
 
   /**
    * Constructor for Block class
@@ -20,6 +22,8 @@ export default class Block {
     this.timestamp = block?.timestamp || Date.now();
     this.previousHash = block?.previousHash || '';
     this.data = block?.data || '';
+    this.nonce = block?.nonce || 0;
+    this.miner = block?.miner || '';
     this.hash = block?.hash || this.getHash();
   }
 
@@ -28,23 +32,49 @@ export default class Block {
       this.index +
       this.data +
       this.previousHash +
-      this.timestamp
+      this.timestamp +
+      this.nonce +
+      this.miner
     ).toString()
   }
 
   /**
+   * Mines the Block by finding a hash that starts with the given prefix
+   * @param difficulty The Blockchain current difficulty
+   * @param miner The miner wallet address
+   */
+  mine(difficulty: number, miner: string) {
+    this.miner = miner
+    const prefix = new Array(difficulty + 1).join('0')
+
+    do {
+      this.nonce++
+      this.hash = this.getHash()
+    }
+    while (!this.hash.startsWith(prefix))
+  }
+
+  /**
    * Validates the Block
-   * @returns {boolean} Returns true if the Block is valid
+   * @returns previousIndex The previous Block index
+   * @returns previousHash The previous Block hash
+   * @returns difficulty The Blockchain current difficulty
    */
   isValid(
     previousIndex: number,
-    previousHash: string
+    previousHash: string,
+    difficulty: number
   ): Validation {
     if (previousIndex !== this.index - 1) return new Validation(false, 'Invalid index');
     if (this.timestamp < 1) return new Validation(false, 'Invalid timestamp');
     if (previousHash !== this.previousHash) return new Validation(false, 'Invalid previous hash');
     if (!this.data) return new Validation(false, 'Invalid data');
-    if (!this.hash || this.hash !== this.getHash()) return new Validation(false, 'Invalid hash');
+    if (!this.nonce || !this.miner) return new Validation(false, 'Not mined');
+
+    const prefix = new Array(difficulty + 1).join('0')
+    if (this.hash !== this.getHash() || !this.hash.startsWith(prefix))
+      return new Validation(false, 'Invalid hash');
+
     return new Validation();
   }
 }
