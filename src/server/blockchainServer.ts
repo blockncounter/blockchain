@@ -44,13 +44,10 @@ app.post('/blocks', (req, res, next) => {
   if (validation.success)
     return res.status(201).json(block)
   else
-    return res.status(422).json(validation)
+    return res.status(400).json(validation)
 })
 
-if (process.argv.includes('--run')) {
-  app.listen(PORT, () => {
-    console.log(`Blockchain server is running on port ${PORT}`);
-  })
-}
+if (process.argv.includes('--run'))
+  app.listen(PORT, () => console.log(`Blockchain server is running on port ${PORT}`))
 
 export { app }

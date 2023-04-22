@@ -23,7 +23,7 @@ export default class Block {
   }
 
   getHash(): string {
-    return this.hash || '1117825c34efeab7f4e502259785b3acd960db642cbc54ab4a37018e5e5d26d1'
+    return this.hash || 'cbc0401163a8784b7feb36c149d7ce257bf78396251de8429bad39d252578396'
   }
 
   /**
