@@ -1,6 +1,17 @@
 import sha256 from 'crypto-js/sha256';
 import Validation from './validation';
 
+interface mineParams {
+  difficulty: number;
+  miner: string;
+}
+
+export interface isValidParams {
+  previousIndex: number;
+  previousHash: string;
+  difficulty: number;
+}
+
 /**
  * Block class
  */
@@ -43,7 +54,7 @@ export default class Block {
    * @param difficulty The Blockchain current difficulty
    * @param miner The miner wallet address
    */
-  mine(difficulty: number, miner: string) {
+  mine({ difficulty, miner }: mineParams) {
     this.miner = miner
     const prefix = new Array(difficulty + 1).join('0')
 
@@ -60,11 +71,7 @@ export default class Block {
    * @returns previousHash The previous Block hash
    * @returns difficulty The Blockchain current difficulty
    */
-  isValid(
-    previousIndex: number,
-    previousHash: string,
-    difficulty: number
-  ): Validation {
+  isValid({ previousIndex, previousHash, difficulty }: isValidParams): Validation {
     if (previousIndex !== this.index - 1) return new Validation(false, 'Invalid index');
     if (this.timestamp < 1) return new Validation(false, 'Invalid timestamp');
     if (previousHash !== this.previousHash) return new Validation(false, 'Invalid previous hash');

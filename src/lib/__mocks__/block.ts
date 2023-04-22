@@ -1,3 +1,4 @@
+import { isValidParams } from './../block';
 import Validation from '../validation';
 
 /**
@@ -30,10 +31,10 @@ export default class Block {
    * Validates the Mock Block
    * @returns {boolean} Returns true if the Mock Block is valid
    */
-  isValid(
-    previousIndex: number,
-    previousHash: string
-  ): Validation {
+  isValid({
+    previousIndex,
+    previousHash
+  }: isValidParams): Validation {
     if (!previousHash || previousIndex < 0 || this.index < 1)
       return new Validation(false, 'Invalid Mock Block')
 
