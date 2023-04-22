@@ -15,13 +15,21 @@ describe('Blockchain tests', () => {
 
   it('should add a block', () => {
     const blockchain = new Blockchain()
-    const result = blockchain.addBlock(new Block(1, blockchain.getLastBlock().hash, 'abc'))
+    const result = blockchain.addBlock(new Block({
+      index: 1,
+      previousHash: blockchain.getLastBlock().hash,
+      data: 'Block 2'
+    } as Block))
     expect(result.success).toBeTruthy()
   })
 
   it('should NOT add a block (index)', () => {
     const blockchain = new Blockchain()
-    const result = blockchain.addBlock(new Block(-1, blockchain.getLastBlock().hash, 'abc'))
+    const result = blockchain.addBlock(new Block({
+      index: -1,
+      previousHash: blockchain.getLastBlock().hash,
+      data: 'Block 2'
+    } as Block))
     expect(result.success).toBeFalsy()
   })
 
@@ -39,13 +47,21 @@ describe('Blockchain tests', () => {
 
   it('should be valid', () => {
     const blockchain = new Blockchain()
-    blockchain.addBlock(new Block(1, blockchain.getLastBlock().hash, 'abc'))
+    blockchain.addBlock(new Block({
+      index: 1,
+      previousHash: blockchain.getLastBlock().hash,
+      data: 'Block 2'
+    } as Block))
     expect(blockchain.isValid().success).toBeTruthy()
   })
 
   it('should NOT be valid', () => {
     const blockchain = new Blockchain()
-    blockchain.addBlock(new Block(1, blockchain.getLastBlock().hash, 'abc'))
+    blockchain.addBlock(new Block({
+      index: 1,
+      previousHash: blockchain.getLastBlock().hash,
+      data: 'Block 2'
+    } as Block))
     blockchain.blocks[1].data = 'def'
     expect(blockchain.isValid().success).toBeFalsy()
   })

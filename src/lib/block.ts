@@ -13,21 +13,14 @@ export default class Block {
 
   /**
    * Constructor for Block class
-   * @param index The Block index in the Blockchain
-   * @param hash The Block hash
-   * @param previousHash The previous Block hash
-   * @param data The Block data
+   * @param block The Block attributes
    */
-  constructor(
-    index: number,
-    previousHash: string,
-    data: string
-  ) {
-    this.index = index;
-    this.timestamp = Date.now();
-    this.previousHash = previousHash;
-    this.data = data;
-    this.hash = this.getHash();
+  constructor(block?: Block) {
+    this.index = block?.index || 0;
+    this.timestamp = block?.timestamp || Date.now();
+    this.previousHash = block?.previousHash || '';
+    this.data = block?.data || '';
+    this.hash = block?.hash || this.getHash();
   }
 
   getHash(): string {
