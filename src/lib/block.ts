@@ -84,4 +84,12 @@ export default class Block {
 
     return new Validation();
   }
+
+  static fromNextBlockInfo(nextBlockInfo: any): Block {
+    const block = new Block()
+    block.index = nextBlockInfo.index
+    block.previousHash = nextBlockInfo.previousHash
+    block.data = nextBlockInfo.data
+    return block
+  }
 }
