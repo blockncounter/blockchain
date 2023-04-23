@@ -1,5 +1,6 @@
 import sha256 from 'crypto-js/sha256';
 import Validation from './validation';
+import NextBlockInfo from './types/nextBlockInfo';
 
 interface mineParams {
   difficulty: number;
@@ -85,7 +86,7 @@ export default class Block {
     return new Validation();
   }
 
-  static fromNextBlockInfo(nextBlockInfo: any): Block {
+  static fromNextBlockInfo(nextBlockInfo: NextBlockInfo): Block {
     const block = new Block()
     block.index = nextBlockInfo.index
     block.previousHash = nextBlockInfo.previousHash

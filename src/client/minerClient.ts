@@ -1,12 +1,17 @@
-import axios from 'axios'
-import NextBlockInfo from '../types/nextBlockInfo';
-import Block from '../block';
+import dotenv from 'dotenv'
+dotenv.config()
 
-const BLOCKCHAIN_SERVER = 'http://localhost:3000'
+import axios from 'axios'
+import NextBlockInfo from '../lib/types/nextBlockInfo';
+import Block from '../lib/block';
+
+const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER
 const minerWallet = {
   privateKey: 'test',
-  publicKey: 'test'
+  publicKey: `${process.env.MINER_WALLET}`
 }
+console.log(`Logged as ${minerWallet.publicKey}`);
+
 
 let totalMined = 0
 
