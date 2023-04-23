@@ -1,8 +1,10 @@
 import { describe, it, expect, jest } from '@jest/globals'
 import Blockchain from '../src/lib/blockchain'
 import Block from '../src/lib/block'
+import Transaction from '../src/lib/transaction'
 
 jest.mock('../src/lib/block')
+jest.mock('../src/lib/transaction')
 
 describe('Blockchain tests', () => {
   it('should have genesis block', () => {
@@ -20,7 +22,9 @@ describe('Blockchain tests', () => {
     const result = blockchain.addBlock(new Block({
       index: 1,
       previousHash: blockchain.getLastBlock().hash,
-      data: 'Block 2'
+      transactions: [new Transaction({
+        data: 'Block 2'
+      } as Transaction)] as Transaction[]
     } as Block))
 
     expect(result.success).toBeTruthy()
@@ -31,7 +35,9 @@ describe('Blockchain tests', () => {
     const result = blockchain.addBlock(new Block({
       index: -1,
       previousHash: blockchain.getLastBlock().hash,
-      data: 'Block 2'
+      transactions: [new Transaction({
+        data: 'Block 2'
+      } as Transaction)] as Transaction[]
     } as Block))
     expect(result.success).toBeFalsy()
   })
@@ -44,7 +50,7 @@ describe('Blockchain tests', () => {
 
   it('should NOT return a block', () => {
     const blockchain = new Blockchain()
-    const block = blockchain.getBlock(blockchain.getLastBlock().data)
+    const block = blockchain.getBlock(blockchain.getLastBlock().transactions[0].hash)
     expect(block).toBeFalsy()
   })
 
@@ -53,7 +59,9 @@ describe('Blockchain tests', () => {
     blockchain.addBlock(new Block({
       index: 1,
       previousHash: blockchain.getLastBlock().hash,
-      data: 'Block 2'
+      transactions: [new Transaction({
+        data: 'Block 2'
+      } as Transaction)] as Transaction[]
     } as Block))
     expect(blockchain.isValid().success).toBeTruthy()
   })
@@ -64,7 +72,9 @@ describe('Blockchain tests', () => {
     blockchain.addBlock(new Block({
       index: 1,
       previousHash: blockchain.getLastBlock().hash,
-      data: 'Block 2'
+      transactions: [new Transaction({
+        data: 'Block 2'
+      } as Transaction)] as Transaction[]
     } as Block))
 
     blockchain.blocks[1].index = -1

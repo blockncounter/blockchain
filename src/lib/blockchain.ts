@@ -22,7 +22,7 @@ export default class Blockchain {
       previousHash: '0',
       transactions: [new Transaction({
         type: TransactionType.FEE,
-        data: 'Genesis block'
+        data: 'Genesis Block'
       } as Transaction)] as Transaction[]
     } as Block)];
     this.nextIndex++;

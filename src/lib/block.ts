@@ -37,7 +37,7 @@ export default class Block {
     this.previousHash = block?.previousHash || ''
 
     this.transactions = block?.transactions
-      ? block?.transactions.map(tx => new Transaction(tx))
+      ? block.transactions.map(tx => new Transaction(tx))
       : [] as Transaction[]
 
     this.nonce = block?.nonce || 0
@@ -89,7 +89,7 @@ export default class Block {
       const validations = this.transactions.map(tx => tx.isValid())
       const errors = validations.filter(v => !v.success).map(v => v.message)
       if (errors && errors.length > 0)
-        return new Validation(false, 'Invalid block due to invalid transaction:' + errors.join(' / '))
+        return new Validation(false, 'Invalid block due to invalid transaction: ' + errors.join(', '))
     }
 
     if (previousIndex !== this.index - 1) return new Validation(false, 'Invalid index');

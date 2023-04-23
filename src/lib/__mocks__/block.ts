@@ -1,15 +1,16 @@
 import { isValidParams } from './../block';
 import Validation from '../validation';
+import Transaction from './transaction';
 
 /**
  * Mock Block class
  */
 export default class Block {
-  index: number;
-  timestamp: number;
-  hash: string;
-  previousHash: string;
-  data: string;
+  index: number
+  timestamp: number
+  hash: string
+  previousHash: string
+  transactions: Transaction[]
 
   /**
    * Constructor for Mock Block class
@@ -19,7 +20,7 @@ export default class Block {
     this.index = block?.index || 0;
     this.timestamp = block?.timestamp || Date.now();
     this.previousHash = block?.previousHash || '';
-    this.data = block?.data || '';
+    this.transactions = block?.transactions || [] as Transaction[]
     this.hash = block?.hash || this.getHash();
   }
 
