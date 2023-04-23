@@ -1,3 +1,5 @@
+import Transaction from "../transaction"
+
 /**
  * The NextBlockInfo to be sent to the Miner
  * @param index The index of the next Block
@@ -13,5 +15,5 @@ export default interface NextBlockInfo {
   difficulty: number
   maxDifficulty: number
   feePerTx: number
-  data: string
+  transactions: Transaction[]
 }
