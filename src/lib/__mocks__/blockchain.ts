@@ -3,29 +3,33 @@ import Validation from '../validation';
 import NextBlockInfo from '../types/nextBlockInfo';
 import Transaction from './transaction';
 import { TransactionType } from '../types/transactionType';
+import TransactionSearch from '../types/transactionSearch';
 
 /**
  * Mock Blockchain class
  */
 export default class Blockchain {
-  blocks: Block[];
-  nextIndex: number = 0;
+  blocks: Block[]
+  mempool: Transaction[]
+  nextIndex: number = 0
 
   /**
    * Constructor for Mock Blockchain class
    */
   constructor() {
+    this.mempool = []
     this.blocks = [new Block({
       index: 0,
       previousHash: '0',
       transactions: [new Transaction({
         type: TransactionType.FEE,
-        data: 'tx1'
+        data: 'tx1',
+        hash: '123'
       } as Transaction)] as Transaction[],
       timestamp: Date.now(),
       hash: 'cbc0401163a8784b7feb36c149d7ce257bf78396251de8429bad39d252578396'
-    } as Block)];
-    this.nextIndex++;
+    } as Block)]
+    this.nextIndex++
   }
 
   getLastBlock(): Block {
@@ -39,6 +43,23 @@ export default class Blockchain {
     this.nextIndex++;
 
     return new Validation();
+  }
+
+  addTransaction(transaction: Transaction): Validation {
+    const validation = transaction.isValid()
+    if (!validation.success) return validation
+
+    this.mempool.push(transaction)
+    return new Validation()
+  }
+
+  getTransaction(hash: string): TransactionSearch {
+    return {
+      mempoolIndex: 0,
+      transaction: {
+        hash: hash
+      }
+    } as TransactionSearch
   }
 
   getBlock(hash: string): Block | undefined {
