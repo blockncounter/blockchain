@@ -1,22 +1,21 @@
 import dotenv from 'dotenv'
-dotenv.config()
 
 import axios from 'axios'
-import NextBlockInfo from '../lib/types/nextBlockInfo';
-import Block from '../lib/block';
+import NextBlockInfo from '../lib/types/nextBlockInfo'
+import Block from '../lib/block'
+dotenv.config()
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER
 const minerWallet = {
   privateKey: 'test',
-  publicKey: `${process.env.MINER_WALLET}`
+  publicKey: `${process.env.MINER_WALLET}`,
 }
-console.log(`Logged as ${minerWallet.publicKey}`);
-
+console.log(`Logged as ${minerWallet.publicKey}`)
 
 let totalMined = 0
 
 async function mine() {
-  console.log('Getting next block info...');
+  console.log('Getting next block info...')
 
   const { data } = await axios.get(`${BLOCKCHAIN_SERVER}/blocks/next`)
   if (!data) {
@@ -32,7 +31,10 @@ async function mine() {
   // TODO: add reward tx
 
   console.log(`Start mining block ${nextBlockInfo.index}...`)
-  newBlock.mine({ difficulty: nextBlockInfo.difficulty, miner: minerWallet.publicKey })
+  newBlock.mine({
+    difficulty: nextBlockInfo.difficulty,
+    miner: minerWallet.publicKey,
+  })
 
   console.log(`Block mined: ${newBlock.hash}! Sending to blockchain...`)
 
@@ -41,8 +43,7 @@ async function mine() {
     console.log('Block sent and accepted!')
     totalMined++
     console.log(`Total mined: ${totalMined}`)
-  }
-  catch (err: any) {
+  } catch (err: any) {
     console.error(err.response ? err.response.data : err.msg)
   }
 

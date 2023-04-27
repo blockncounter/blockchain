@@ -9,17 +9,21 @@
     "dev": "node --watch ./src/blockchain.ts",
     "test": "jest",
     "blockchain": "ts-node ./src/server/blockchainServer.ts --run",
-    "miner": "ts-node ./src/client/minerClient.ts"
+    "miner": "ts-node ./src/client/minerClient.ts",
+    "wallet": "ts-node ./src/client/walletClient.ts",
+    "lint": "eslint src --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@rocketseat/eslint-config": "^1.2.0",
     "@types/crypto-js": "^4.1.1",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.0",
     "@types/morgan": "^1.9.4",
     "@types/supertest": "^2.0.12",
+    "eslint": "^8.39.0",
     "jest": "^29.5.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
