@@ -1,6 +1,6 @@
 # Blockchain Prototype - Node.js
-> Proof of Work Blockchain based on Bitcoin architecture. <br>
-> Built using Node.js, Express, Jest, and TypeScript.
+> Under development Proof of Work Blockchain based on Bitcoin architecture. <br>
+> Built using Node.js, Express, Jest, and TypeScript. <br>
 
 <br>
 
