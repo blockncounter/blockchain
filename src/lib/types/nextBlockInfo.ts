@@ -1,4 +1,4 @@
-import Transaction from "../transaction"
+import Transaction from '../transaction'
 
 /**
  * The NextBlockInfo to be sent to the Miner

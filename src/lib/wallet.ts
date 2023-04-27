@@ -1,5 +1,5 @@
 import * as ecc from 'tiny-secp256k1'
-import ECPairFactory, { ECPairInterface } from 'ecpair'
+import ECPairFactory from 'ecpair'
 
 const ECPair = ECPairFactory(ecc)
 
