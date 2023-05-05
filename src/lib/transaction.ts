@@ -1,7 +1,7 @@
 import sha256 from 'crypto-js/sha256'
 import { TransactionType } from './types/transactionType'
 import Validation from './validation'
-import TransactionInput from './types/transactionInput'
+import TransactionInput from './transactionInput'
 
 /**
  * Transaction class
@@ -30,7 +30,18 @@ export default class Transaction {
   isValid(): Validation {
     if (this.hash !== this.getHash())
       return new Validation(false, 'Invalid hash')
+
     if (!this.to) return new Validation(false, "Invalid 'To'")
+
+    if (this.txInput) {
+      const validation = this.txInput.isValid()
+
+      if (!validation.success)
+        return new Validation(
+          false,
+          `Invalid  Transaction Input: ${validation.message}`,
+        )
+    }
 
     return new Validation()
   }

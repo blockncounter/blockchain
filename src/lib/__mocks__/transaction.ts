@@ -1,6 +1,5 @@
-import sha256 from 'crypto-js/sha256';
-import { TransactionType } from "../types/transactionType";
-import Validation from '../validation';
+import { TransactionType } from '../types/transactionType'
+import Validation from '../validation'
 
 /**
  * Mock Transaction class
@@ -23,7 +22,7 @@ export default class Transaction {
   }
 
   isValid(): Validation {
-    if (!this.data) return new Validation(false, "Invalid Mock Transaction")
+    if (!this.data) return new Validation(false, 'Invalid Mock Transaction')
 
     return new Validation()
   }

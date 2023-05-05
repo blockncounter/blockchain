@@ -1,7 +1,7 @@
 import * as ecc from 'tiny-secp256k1'
 import ECPairFactory from 'ecpair'
 import sha256 from 'crypto-js/sha256'
-import Validation from '../validation'
+import Validation from './validation'
 
 const ECPair = ECPairFactory(ecc)
 

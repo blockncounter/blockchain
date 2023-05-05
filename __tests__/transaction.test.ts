@@ -5,7 +5,7 @@ import { TransactionType } from '../src/lib/types/transactionType'
 describe('Transaction tests', () => {
   it('should be valid (REGULAR)', () => {
     const tx = new Transaction({
-      data: 'tx'
+      data: 'tx',
     } as Transaction)
 
     const valid = tx.isValid()
@@ -15,7 +15,7 @@ describe('Transaction tests', () => {
   it('should be valid (FEE)', () => {
     const tx = new Transaction({
       data: 'tx',
-      type: TransactionType.FEE
+      type: TransactionType.FEE,
     } as Transaction)
 
     const valid = tx.isValid()
@@ -27,7 +27,7 @@ describe('Transaction tests', () => {
       data: 'tx',
       type: TransactionType.REGULAR,
       timestamp: Date.now(),
-      hash: 'abc'
+      hash: 'abc',
     } as Transaction)
 
     const valid = tx.isValid()
