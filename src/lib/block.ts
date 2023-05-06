@@ -88,11 +88,16 @@ export default class Block {
     difficulty,
   }: isValidParams): Validation {
     if (this.transactions && this.transactions.length) {
-      if (
-        this.transactions.filter((tx) => tx.type === TransactionType.FEE)
-          .length > 1
-      )
+      const feeTxs = this.transactions.filter((tx) => tx.type === TransactionType.FEE)
+      if (!feeTxs.length)
+        return new Validation(false, 'No fee Transaction')
+
+      if (feeTxs.length > 1)
         return new Validation(false, 'Invalid number of fees')
+
+      if (feeTxs[0].to !== this.miner)
+        return new Validation(false, 'Invalid fee Transaction: belongs to another Miner')
+
 
       const validations = this.transactions.map((tx) => tx.isValid())
       const errors = validations.filter((v) => !v.success).map((v) => v.message)

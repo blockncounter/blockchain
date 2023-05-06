@@ -86,7 +86,7 @@ export default class Blockchain {
           txInput: new TransactionInput(),
         } as Transaction),
       ] as Transaction[],
-      difficulty: 0,
+      difficulty: 1,
       previousHash:
         'f62d7db7c373db651a9ac2d37136b36decbb59183ec1be04b42b2b9f77945c59',
       index: 1,
