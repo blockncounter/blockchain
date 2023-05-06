@@ -232,6 +232,8 @@ describe('Block tests', () => {
 
     block.mine({ difficulty: exampleDifficulty, miner: exampleMiner })
 
+    block.transactions[0].to = ''
+
     const valid = block.isValid({
       previousIndex: genesis.index,
       previousHash: genesis.hash,

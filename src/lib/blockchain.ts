@@ -2,8 +2,9 @@ import Block from './block'
 import Validation from './validation'
 import NextBlockInfo from './types/nextBlockInfo'
 import Transaction from './transaction'
-import { TransactionType } from './types/transactionType'
+import TransactionInput from './transactionInput'
 import TransactionSearch from './types/transactionSearch'
+import { TransactionType } from './types/transactionType'
 
 /**
  * Blockchain class
@@ -29,7 +30,7 @@ export default class Blockchain {
         transactions: [
           new Transaction({
             type: TransactionType.FEE,
-            data: 'Genesis Block',
+            txInput: new TransactionInput(),
           } as Transaction),
         ] as Transaction[],
       } as Block),
