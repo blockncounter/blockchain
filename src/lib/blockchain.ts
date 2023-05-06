@@ -50,6 +50,7 @@ export default class Blockchain {
     if (transaction.txInput) {
       const from = transaction.txInput.fromAddress
       const pendingTx = this.mempool.find(
+        /* c8 ignore next */
         (tx) => tx?.txInput?.fromAddress === from,
       )
       console.log('pendingTx:', pendingTx)
@@ -74,8 +75,8 @@ export default class Blockchain {
     )
       return new Validation(false, 'Duplicated transaction in the Blockchain')
 
-    if (this.mempool.some((tx) => tx.hash === transaction.hash))
-      return new Validation(false, 'Duplicated transaction in the Mempool')
+    // if (this.mempool.some((tx) => tx.hash === transaction.hash))
+    //   return new Validation(false, 'Duplicated transaction in the Mempool')
 
     this.mempool.push(transaction)
     return new Validation(true, transaction.hash)

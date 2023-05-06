@@ -29,7 +29,7 @@ export default class Transaction {
   isValid(): Validation {
     if (!this.to) return new Validation(false, 'Invalid Mock Transaction')
 
-    if (!this.txInput.isValid().success)
+    if (this.txInput && !this.txInput.isValid().success)
       return new Validation(false, 'Invalid Mock Transaction')
 
     return new Validation()

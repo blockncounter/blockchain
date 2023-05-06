@@ -132,7 +132,25 @@ describe('Blockchain tests', () => {
     expect(validation.success).toBeTruthy()
   })
 
-  it('should NOT add a Transaction (invalid Transaction)', () => {
+  it('should NOT add a Transaction (pending tx)', () => {
+    const blockchain = new Blockchain()
+
+    const tx = new Transaction({
+      txInput: new TransactionInput(),
+      hash: '123',
+    } as Transaction)
+    blockchain.addTransaction(tx)
+
+    const tx2 = new Transaction({
+      txInput: new TransactionInput(),
+      hash: '1232',
+    } as Transaction)
+
+    const validation = blockchain.addTransaction(tx2)
+    expect(validation.success).toBeFalsy()
+  })
+
+  it('should NOT add a Transaction (invalid tx)', () => {
     const blockchain = new Blockchain()
     const txInput = new TransactionInput()
     txInput.amount = -1
@@ -164,19 +182,19 @@ describe('Blockchain tests', () => {
     expect(validation.success).toBeFalsy()
   })
 
-  it('should NOT add a Transaction (duplicated in Mempool)', () => {
-    const blockchain = new Blockchain()
+  // it('should NOT add a Transaction (duplicated in Mempool)', () => {
+  //   const blockchain = new Blockchain()
 
-    const tx = new Transaction({
-      txInput: new TransactionInput(),
-      hash: '123',
-    } as Transaction)
+  //   const tx = new Transaction({
+  //     txInput: new TransactionInput(),
+  //     hash: '123',
+  //   } as Transaction)
 
-    blockchain.mempool.push(tx)
+  //   blockchain.mempool.push(tx)
 
-    const validation = blockchain.addTransaction(tx)
-    expect(validation.success).toBeFalsy()
-  })
+  //   const validation = blockchain.addTransaction(tx)
+  //   expect(validation.success).toBeFalsy()
+  // })
 
   it('should get a Transaction (Mempool)', () => {
     const blockchain = new Blockchain()

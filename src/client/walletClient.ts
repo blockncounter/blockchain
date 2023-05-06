@@ -32,7 +32,8 @@ function menu() {
     console.log('2 - Recover Wallet')
     console.log('3 - Check Balance')
     console.log('4 - Send Transaction')
-    console.log('5 - Logout')
+    console.log('5 - Search Transaction')
+    console.log('6 - Logout')
     rl.question('\n> ', (answer) => {
       switch (answer) {
         case '1':
@@ -48,6 +49,9 @@ function menu() {
           sendTransaction()
           break
         case '5':
+          getTransaction()
+          break
+        case '6':
           logout()
           break
         default:
@@ -162,6 +166,17 @@ function sendTransaction() {
 
   // TODO: send Transaction to blockchain
   preMenu()
+}
+
+function getTransaction() {
+  console.clear()
+  rl.question('\nEnter the transaction hash: ', async (hash) => {
+    const response = await axios.get(
+      `${BLOCKCHAIN_SERVER}/transactions/${hash}`,
+    )
+    console.log(response.data)
+    preMenu()
+  })
 }
 
 function logout() {
