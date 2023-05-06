@@ -47,6 +47,22 @@ export default class Blockchain {
   }
 
   addTransaction(transaction: Transaction): Validation {
+    if (transaction.txInput) {
+      const from = transaction.txInput.fromAddress
+      const pendingTx = this.mempool.find(
+        (tx) => tx?.txInput?.fromAddress === from,
+      )
+      console.log('pendingTx:', pendingTx)
+
+      if (pendingTx)
+        return new Validation(
+          false,
+          'Sender wallet already has a pending transaction.',
+        )
+
+      // TODO: validate if the sender wallet has enough balance
+    }
+
     const validation = transaction.isValid()
     if (!validation.success)
       return new Validation(false, `Invalid transaction: ${validation.message}`)

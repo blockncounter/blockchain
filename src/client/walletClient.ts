@@ -119,7 +119,7 @@ function sendTransaction() {
       return preMenu()
     }
 
-    rl.question('Enter the amount to send: ', async (amountStr) => {
+    rl.question('\nEnter the amount to send: ', async (amountStr) => {
       const amount = Number(amountStr)
       if (!amount || amount < 0 || isNaN(amount)) {
         console.clear()
@@ -148,12 +148,13 @@ function sendTransaction() {
           tx,
         )
         console.log(
-          'Transaction sent successfully! Waiting for confirmation...\n',
+          '\nTransaction sent successfully! Waiting for confirmation...\n',
         )
         console.log(`Hash: ${txResponse.data.hash}`)
+        preMenu()
       } catch (err: any) {
         console.clear()
-        console.log(err.response ? err.response.data : err.message)
+        console.log(err.response ? err.response.data.message : err.message)
         return preMenu()
       }
     })
