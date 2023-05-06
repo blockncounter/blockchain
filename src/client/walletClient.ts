@@ -1,7 +1,10 @@
+import { TransactionType } from './../lib/types/transactionType'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import readline from 'readline'
 import Wallet from '../lib/wallet'
+import Transaction from '../lib/transaction'
+import TransactionInput from '../lib/transactionInput'
 dotenv.config()
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER
@@ -108,6 +111,53 @@ function sendTransaction() {
     console.log('You must be logged in to send a transaction.')
     return preMenu()
   }
+
+  rl.question('Enter the recipient wallet address: ', (recipientWallet) => {
+    if (!recipientWallet || recipientWallet.length !== 66) {
+      console.clear()
+      console.log('Invalid wallet address.')
+      return preMenu()
+    }
+
+    rl.question('Enter the amount to send: ', async (amountStr) => {
+      const amount = Number(amountStr)
+      if (!amount || amount < 0 || isNaN(amount)) {
+        console.clear()
+        console.log('Invalid amount.')
+        return preMenu()
+      }
+
+      // TODO: validate balance
+
+      const tx = new Transaction({
+        timestamp: Date.now(),
+        to: recipientWallet,
+        type: TransactionType.REGULAR,
+        txInput: new TransactionInput({
+          amount,
+          fromAddress: myWalletPub,
+        } as TransactionInput),
+      } as Transaction)
+
+      tx?.txInput?.sign(myWalletPriv)
+      tx.hash = tx.getHash()
+
+      try {
+        const txResponse = await axios.post(
+          `${BLOCKCHAIN_SERVER}/transactions`,
+          tx,
+        )
+        console.log(
+          'Transaction sent successfully! Waiting for confirmation...\n',
+        )
+        console.log(`Hash: ${txResponse.data.hash}`)
+      } catch (err: any) {
+        console.clear()
+        console.log(err.response ? err.response.data : err.message)
+        return preMenu()
+      }
+    })
+  })
 
   // TODO: send Transaction to blockchain
   preMenu()
