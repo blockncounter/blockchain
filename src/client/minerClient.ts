@@ -33,11 +33,11 @@ function getRewardTx(): Transaction {
 }
 
 async function mine() {
-  console.log('Getting next block info...')
+  console.log('\nGetting next block info...')
 
   const { data } = await axios.get(`${BLOCKCHAIN_SERVER}/blocks/next`)
   if (!data) {
-    console.log('No block to mine. Retrying in 5 seconds...')
+    console.log('\nNo block to mine. Retrying in 5 seconds...')
     return setTimeout(() => {
       mine()
     }, 5000)
@@ -49,19 +49,19 @@ async function mine() {
   newBlock.miner = minerWallet.publicKey
   newBlock.hash = newBlock.getHash()
 
-  console.log(`Start mining block ${nextBlockInfo.index}...`)
+  console.log(`\nStart mining block ${nextBlockInfo.index}...`)
   newBlock.mine({
     difficulty: nextBlockInfo.difficulty,
     miner: minerWallet.publicKey,
   })
 
-  console.log(`Block mined: ${newBlock.hash}! Sending to blockchain...`)
+  console.log(`\nBlock mined: ${newBlock.hash}! Sending to blockchain...`)
 
   try {
     await axios.post(`${BLOCKCHAIN_SERVER}/blocks`, newBlock)
-    console.log('Block sent and accepted!')
+    console.log('\nBlock sent and accepted!')
     totalMined++
-    console.log(`Total mined: ${totalMined}`)
+    console.log(`\nTotal mined: ${totalMined}`)
   } catch (err: any) {
     console.error(err.response ? err.response.data : err.msg)
   }

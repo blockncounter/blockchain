@@ -132,24 +132,37 @@ function sendTransaction() {
         return preMenu()
       }
 
-      // TODO: validate balance
+      const walletResponse = await axios.get(
+        `${BLOCKCHAIN_SERVER}/wallets/${myWalletPub}`,
+      )
+      const balance = walletResponse.data.balance as number
+      const fee = walletResponse.data.fee as number
+      const utxo = walletResponse.data.utxo as TransactionOutput[]
+
+      if (balance < amount + fee) {
+        console.log('\nInsufficient funds (tx + fee)')
+        return preMenu()
+      }
 
       const tx = new Transaction({
         timestamp: Date.now(),
         type: TransactionType.REGULAR,
-        txInputs: [
-          new TransactionInput({
-            amount,
-            fromAddress: myWalletPub,
-          } as TransactionInput),
-        ],
-        txOutputs: [
-          new TransactionOutput({
-            amount,
-            toAddress: recipientWallet,
-          } as TransactionOutput),
-        ],
       } as Transaction)
+
+      tx.txInputs = [
+        new TransactionInput({
+          amount,
+          fromAddress: myWalletPub,
+          previousTxHash: utxo[0].txHash,
+        } as TransactionInput),
+      ]
+
+      tx.txOutputs = [
+        new TransactionOutput({
+          amount,
+          toAddress: recipientWallet,
+        } as TransactionOutput),
+      ]
 
       tx.txInputs![0].sign(myWalletPriv)
       tx.hash = tx.getHash()

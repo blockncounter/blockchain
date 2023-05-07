@@ -95,7 +95,7 @@ export default class Block {
       if (feeTxs.length > 1)
         return new Validation(false, 'Invalid number of fees')
 
-      if (feeTxs[0].txOutputs.some(txo => txo.toAddress === this.miner))
+      if (!feeTxs[0].txOutputs.some(txo => txo.toAddress === this.miner))
         return new Validation(false, 'Invalid fee tx: invalid Miner address')
 
       // TODO: check fee amount

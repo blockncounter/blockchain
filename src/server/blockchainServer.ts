@@ -5,6 +5,7 @@ import Blockchain from '../lib/blockchain'
 import Block from '../lib/block'
 import Transaction from '../lib/transaction'
 import Wallet from '../lib/wallet'
+import TransactionOutput from '../lib/transactionOutput'
 dotenv.config()
 
 /* c8 ignore next */
@@ -80,10 +81,32 @@ app.post('/blocks', (req: Request, res: Response, next: NextFunction) => {
   else return res.status(400).json(validation)
 })
 
+app.get(
+  '/wallets/:wallet',
+  (req: Request, res: Response, next: NextFunction) => {
+    const wallet = req.params.wallet
+
+    // TODO: implement final UTXO version
+    return res.json({
+      balance: 10,
+      fee: blockchain.getFeePerTx(),
+      utxo: [
+        new TransactionOutput({
+          amount: 10,
+          toAddress: wallet,
+          txHash: 'abc',
+        } as TransactionOutput),
+      ],
+    })
+  },
+)
+
 /* c8 ignore start */
 if (process.argv.includes('--run'))
   app.listen(PORT, () =>
-    console.log(`Blockchain server is running on port ${PORT}`),
+    console.log(
+      `Blockchain server is running on port ${PORT}\n\nWallet: ${wallet.publicKey}`,
+    ),
   )
 /* c8 ignore end */
 
