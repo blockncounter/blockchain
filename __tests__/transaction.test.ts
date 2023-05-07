@@ -1,15 +1,17 @@
 import { jest, describe, it, expect } from '@jest/globals'
 import Transaction from '../src/lib/transaction'
 import TransactionInput from '../src/lib/transactionInput'
+import TransactionOutput from '../src/lib/transactionOutput'
 import { TransactionType } from '../src/lib/types/transactionType'
 
 jest.mock('../src/lib/transactionInput')
+jest.mock('../src/lib/transactionOutput')
 
 describe('Transaction tests', () => {
   it('should be valid (REGULAR)', () => {
     const tx = new Transaction({
-      txInput: new TransactionInput(),
-      to: 'walletTo',
+      txInputs: [new TransactionInput()],
+      txOutputs: [new TransactionOutput()],
     } as Transaction)
 
     const valid = tx.isValid()
@@ -18,11 +20,11 @@ describe('Transaction tests', () => {
 
   it('should be valid (FEE)', () => {
     const tx = new Transaction({
-      txInput: new TransactionInput(),
-      to: 'walletTo',
+      txInputs: [new TransactionInput()],
+      txOutputs: [new TransactionOutput()],
       type: TransactionType.FEE,
     } as Transaction)
-    tx.txInput = undefined
+    tx.txInputs = undefined
     tx.hash = tx.getHash()
 
     const valid = tx.isValid()
@@ -31,8 +33,8 @@ describe('Transaction tests', () => {
 
   it('should NOT be valid (hash)', () => {
     const tx = new Transaction({
-      txInput: new TransactionInput(),
-      to: 'walletTo',
+      txInputs: [new TransactionInput()],
+      txOutputs: [new TransactionOutput()],
       type: TransactionType.REGULAR,
       timestamp: Date.now(),
       hash: 'abc',
@@ -50,12 +52,14 @@ describe('Transaction tests', () => {
 
   it('should NOT be valid (invalid txInput)', () => {
     const tx = new Transaction({
-      to: 'walletTo',
-      txInput: new TransactionInput({
-        amount: -1,
-        fromAddress: 'walletFrom',
-        signature: 'abc',
-      } as TransactionInput),
+      txOutputs: [new TransactionOutput()],
+      txInputs: [
+        new TransactionInput({
+          amount: -1,
+          fromAddress: 'walletFrom',
+          signature: 'abc',
+        } as TransactionInput),
+      ],
     } as Transaction)
     const valid = tx.isValid()
     expect(valid.success).toBeFalsy()
