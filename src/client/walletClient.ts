@@ -97,7 +97,7 @@ function recoverWallet() {
   })
 }
 
-function getBalance() {
+async function getBalance() {
   console.clear()
 
   if (!myWalletPub) {
@@ -105,7 +105,11 @@ function getBalance() {
     return preMenu()
   }
 
-  // TODO: get balance from blockchain
+  const { data } = await axios.get(
+    `${BLOCKCHAIN_SERVER}/wallets/${myWalletPub}`,
+  )
+  console.log(`Balance: ${data.balance}`)
+
   preMenu()
 }
 
@@ -144,29 +148,36 @@ function sendTransaction() {
         return preMenu()
       }
 
-      const tx = new Transaction({
-        timestamp: Date.now(),
-        type: TransactionType.REGULAR,
-      } as Transaction)
+      const txInputs = utxo.map((txo) => TransactionInput.fromTxo(txo))
+      txInputs.forEach((txi) => txi.sign(myWalletPriv))
 
-      tx.txInputs = [
-        new TransactionInput({
-          amount,
-          fromAddress: myWalletPub,
-          previousTxHash: utxo[0].txHash,
-        } as TransactionInput),
-      ]
-
-      tx.txOutputs = [
+      const txOutputs = [] as TransactionOutput[]
+      txOutputs.push(
         new TransactionOutput({
           amount,
           toAddress: recipientWallet,
         } as TransactionOutput),
-      ]
+      )
 
-      tx.txInputs![0].sign(myWalletPriv)
+      const remainingBalance = balance - amount - fee
+      txOutputs.push(
+        new TransactionOutput({
+          amount: remainingBalance,
+          toAddress: myWalletPub,
+        } as TransactionOutput),
+      )
+
+      const tx = new Transaction({
+        txInputs,
+        txOutputs,
+      } as Transaction)
+
       tx.hash = tx.getHash()
-      tx.txOutputs[0].txHash = tx.hash
+      tx.txOutputs.forEach((txo) => (txo.txHash = tx.hash))
+
+      console.log('\nTransaction created successfully!\n')
+      console.log(tx)
+      console.log(`\nRemaining balance: ${remainingBalance}`)
 
       try {
         const txResponse = await axios.post(
