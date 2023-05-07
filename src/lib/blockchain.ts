@@ -62,7 +62,9 @@ export default class Blockchain {
     if (transaction.txInputs && transaction.txInputs.length) {
       const from = transaction.txInputs[0].fromAddress
       const pendingTx = this.mempool
+        /* c8 ignore next */
         .filter((tx) => tx?.txInputs?.length)
+        /* c8 ignore next */
         .map((tx) => tx?.txInputs?.filter((txi) => txi.fromAddress === from))
 
       if (pendingTx && pendingTx.length)

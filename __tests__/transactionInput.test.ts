@@ -35,16 +35,18 @@ describe('Transaction Input tests', () => {
     const txInput = new TransactionInput({
       amount: 10,
       fromAddress: alice.publicKey,
+      previousTxHash: 'abc',
     } as TransactionInput)
 
     const valid = txInput.isValid()
     expect(valid.success).toBeFalsy()
   })
 
-  it('should be valid (invalid signature)', () => {
+  it('should NOT be valid (invalid signature)', () => {
     const txInput = new TransactionInput({
       amount: 10,
       fromAddress: alice.publicKey,
+      previousTxHash: 'abc',
     } as TransactionInput)
     txInput.sign(bob.privateKey)
 
@@ -52,10 +54,33 @@ describe('Transaction Input tests', () => {
     expect(valid.success).toBeFalsy()
   })
 
-  it('should be valid (invalid amount)', () => {
+  it('should NOT be valid (invalid amount)', () => {
     const txInput = new TransactionInput({
       amount: -1,
       fromAddress: alice.publicKey,
+      previousTxHash: 'abc',
+    } as TransactionInput)
+    txInput.sign(alice.privateKey)
+
+    const valid = txInput.isValid()
+    expect(valid.success).toBeFalsy()
+  })
+
+  it('should NOT be valid (invalid previousTxHash)', () => {
+    const txInput = new TransactionInput({
+      amount: -1,
+      fromAddress: alice.publicKey,
+    } as TransactionInput)
+    txInput.sign(alice.privateKey)
+
+    const valid = txInput.isValid()
+    expect(valid.success).toBeFalsy()
+  })
+
+  it('should NOT be valid (invalid fromAddress)', () => {
+    const txInput = new TransactionInput({
+      amount: -1,
+      previousTxHash: 'abc',
     } as TransactionInput)
     txInput.sign(alice.privateKey)
 

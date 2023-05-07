@@ -64,4 +64,37 @@ describe('Transaction tests', () => {
     const valid = tx.isValid()
     expect(valid.success).toBeFalsy()
   })
+
+  it('should NOT be valid (inputs < outputs)', () => {
+    const tx = new Transaction({
+      txInputs: [
+        new TransactionInput({
+          amount: 1,
+          fromAddress: 'walletFrom',
+          signature: 'abc',
+        } as TransactionInput),
+      ],
+      txOutputs: [
+        new TransactionOutput({
+          amount: 2,
+          toAddress: 'walletTo',
+          txHash: 'abc',
+        } as TransactionOutput),
+      ],
+    } as Transaction)
+
+    const valid = tx.isValid()
+    expect(valid.success).toBeFalsy()
+  })
+
+  it('should NOT be valid (TXO hash != TX hash)', () => {
+    const tx = new Transaction({
+      txInputs: [new TransactionInput()],
+      txOutputs: [new TransactionOutput()],
+    } as Transaction)
+    tx.txOutputs[0].txHash = 'aj101dssuji1'
+
+    const valid = tx.isValid()
+    expect(valid.success).toBeFalsy()
+  })
 })

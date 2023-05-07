@@ -4,6 +4,8 @@ import Block from '../src/lib/block'
 import Transaction from '../src/lib/transaction'
 import TransactionInput from '../src/lib/transactionInput'
 import Wallet from '../src/lib/wallet'
+import { TransactionType } from '../src/lib/types/transactionType'
+import TransactionOutput from '../src/lib/transactionOutput'
 
 jest.mock('../src/lib/block')
 jest.mock('../src/lib/transaction')
@@ -46,19 +48,48 @@ describe('Blockchain tests', () => {
     expect(result.success).toBeTruthy()
   })
 
-  it('should NOT add a block (index)', () => {
+  it('should NOT add a block (invalid index)', () => {
     const blockchain = new Blockchain(alice.publicKey)
+    blockchain.mempool.push(new Transaction())
+
+    const block = new Block({
+      index: -1,
+      previousHash: blockchain.getLastBlock().hash,
+    } as Block)
+
+    block.transactions.push(
+      new Transaction({
+        type: TransactionType.FEE,
+        txOutputs: [
+          new TransactionOutput({
+            toAddress: alice.publicKey,
+            amount: 1,
+          } as TransactionOutput),
+        ],
+      } as Transaction),
+    )
+    block.hash = block.getHash()
+
+    const result = blockchain.addBlock(block)
+    expect(result.success).toBeFalsy()
+  })
+
+  it('should NOT add a block (invalid mempool)', () => {
+    const blockchain = new Blockchain(alice.publicKey)
+    blockchain.mempool.push(new Transaction(), new Transaction())
+
+    const tx = new Transaction({
+      txInputs: [new TransactionInput()],
+    } as Transaction)
+
     const result = blockchain.addBlock(
       new Block({
-        index: -1,
+        index: 1,
         previousHash: blockchain.getLastBlock().hash,
-        transactions: [
-          new Transaction({
-            txInputs: [new TransactionInput()],
-          } as Transaction),
-        ] as Transaction[],
+        transactions: [tx],
       } as Block),
     )
+
     expect(result.success).toBeFalsy()
   })
 
