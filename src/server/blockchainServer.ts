@@ -5,7 +5,6 @@ import Blockchain from '../lib/blockchain'
 import Block from '../lib/block'
 import Transaction from '../lib/transaction'
 import Wallet from '../lib/wallet'
-import TransactionOutput from '../lib/transactionOutput'
 dotenv.config()
 
 /* c8 ignore next */
@@ -86,18 +85,11 @@ app.get(
   (req: Request, res: Response, next: NextFunction) => {
     const wallet = req.params.wallet
 
-    // TODO: implement final UTXO version
-    return res.json({
-      balance: 10,
-      fee: blockchain.getFeePerTx(),
-      utxo: [
-        new TransactionOutput({
-          amount: 10,
-          toAddress: wallet,
-          txHash: 'abc',
-        } as TransactionOutput),
-      ],
-    })
+    const utxo = blockchain.getUTXO(wallet)
+    const balance = blockchain.getBalance(wallet)
+    const fee = blockchain.getFeePerTx()
+
+    return res.json({ balance, fee, utxo })
   },
 )
 
