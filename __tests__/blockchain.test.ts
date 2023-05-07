@@ -159,12 +159,11 @@ describe('Blockchain tests', () => {
 
   it('should NOT add a Transaction (invalid tx)', () => {
     const blockchain = new Blockchain(alice.publicKey)
-    const txInputs = [new TransactionInput()]
-    txInputs[0].amount = -1
 
     const tx = new Transaction({
-      txInputs,
-      hash: '123',
+      txInputs: [new TransactionInput()],
+      hash: 'xyz',
+      timestamp: -1,
     } as Transaction)
 
     const validation = blockchain.addTransaction(tx)
