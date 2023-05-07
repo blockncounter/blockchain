@@ -22,8 +22,9 @@ export default class Blockchain {
    * Constructor for Blockchain class
    */
   constructor(miner: string) {
-    this.blocks = [this.createGenesisBlock(miner)]
+    this.blocks = []
     this.mempool = []
+    this.blocks.push(this.createGenesisBlock(miner))
     this.nextIndex++
   }
 

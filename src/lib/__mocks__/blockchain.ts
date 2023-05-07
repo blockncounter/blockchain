@@ -4,7 +4,6 @@ import NextBlockInfo from '../types/nextBlockInfo'
 import Transaction from './transaction'
 import TransactionInput from './transactionInput'
 import TransactionSearch from '../types/transactionSearch'
-import { TransactionType } from '../types/transactionType'
 
 /**
  * Mock Blockchain class
@@ -17,23 +16,18 @@ export default class Blockchain {
   /**
    * Constructor for Mock Blockchain class
    */
-  constructor() {
+  constructor(miner: string) {
+    this.blocks = []
     this.mempool = []
-    this.blocks = [
+    this.blocks.push(
       new Block({
         index: 0,
+        hash: 'abc',
         previousHash: '0',
-        transactions: [
-          new Transaction({
-            type: TransactionType.FEE,
-            txInput: new TransactionInput(),
-            hash: '123',
-          } as Transaction),
-        ] as Transaction[],
+        miner,
         timestamp: Date.now(),
-        hash: 'cbc0401163a8784b7feb36c149d7ce257bf78396251de8429bad39d252578396',
       } as Block),
-    ]
+    )
     this.nextIndex++
   }
 
@@ -59,15 +53,17 @@ export default class Blockchain {
   }
 
   getTransaction(hash: string): TransactionSearch {
+    if (hash === '-1')
+      return { mempoolIndex: -1, blockIndex: -1 } as TransactionSearch
+
     return {
       mempoolIndex: 0,
-      transaction: {
-        hash,
-      },
+      transaction: new Transaction(),
     } as TransactionSearch
   }
 
   getBlock(hash: string): Block | undefined {
+    if (!hash || hash === '-1') return undefined
     return this.blocks.find((block) => block.hash === hash)
   }
 
@@ -81,15 +77,10 @@ export default class Blockchain {
 
   getNextBlock(): NextBlockInfo {
     return {
-      transactions: [
-        new Transaction({
-          txInput: new TransactionInput(),
-        } as Transaction),
-      ] as Transaction[],
+      transactions: this.mempool.slice(0, 2),
       difficulty: 1,
-      previousHash:
-        'f62d7db7c373db651a9ac2d37136b36decbb59183ec1be04b42b2b9f77945c59',
-      index: 1,
+      previousHash: this.getLastBlock().hash,
+      index: this.blocks.length,
       feePerTx: this.getFeePerTx(),
       maxDifficulty: 62,
     } as NextBlockInfo
