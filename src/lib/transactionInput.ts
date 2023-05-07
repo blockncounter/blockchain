@@ -12,12 +12,14 @@ export default class TransactionInput {
   fromAddress: string
   amount: number
   signature: string
+  previousTxHash: string
 
   /**
    * Creates a TransactionInput instance
    * @param txInput The TransactionInput data
    */
   constructor(txInput?: TransactionInput) {
+    this.previousTxHash = txInput?.previousTxHash || ''
     this.fromAddress = txInput?.fromAddress || ''
     this.amount = txInput?.amount || 0
     this.signature = txInput?.signature || ''
@@ -38,7 +40,9 @@ export default class TransactionInput {
    * @returns Returns the TransactionInput hash
    */
   getHash(): string {
-    return sha256(this.fromAddress + this.amount).toString()
+    return sha256(
+      this.previousTxHash + this.fromAddress + this.amount,
+    ).toString()
   }
 
   /**
@@ -46,6 +50,8 @@ export default class TransactionInput {
    * @returns Returns a Validation result object
    */
   isValid(): Validation {
+    if (!this.previousTxHash)
+      return new Validation(false, 'Previous TX is required')
     if (!this.signature) return new Validation(false, 'Signature is required')
     if (!this.fromAddress)
       return new Validation(false, 'From Address is required')

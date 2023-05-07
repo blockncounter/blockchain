@@ -7,12 +7,14 @@ export default class TransactionInput {
   fromAddress: string
   amount: number
   signature: string
+  previousTxHash: string
 
   /**
    * Creates a Mock TransactionInput instance
    * @param txInput The TransactionInput data
    */
   constructor(txInput?: TransactionInput) {
+    this.previousTxHash = txInput?.previousTxHash || 'xyz'
     this.fromAddress = txInput?.fromAddress || 'wallet1'
     this.amount = txInput?.amount || 10
     this.signature = txInput?.signature || 'abc'
@@ -39,6 +41,8 @@ export default class TransactionInput {
    * @returns Returns a Validation result object
    */
   isValid(): Validation {
+    if (!this.previousTxHash)
+      return new Validation(false, 'Previous TX is required')
     if (!this.signature) return new Validation(false, 'Signature is required')
 
     if (!this.amount || this.amount < 1)

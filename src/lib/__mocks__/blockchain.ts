@@ -2,7 +2,6 @@ import Block from './block'
 import Validation from '../validation'
 import NextBlockInfo from '../types/nextBlockInfo'
 import Transaction from './transaction'
-import TransactionInput from './transactionInput'
 import TransactionSearch from '../types/transactionSearch'
 
 /**
