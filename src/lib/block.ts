@@ -95,9 +95,10 @@ export default class Block {
       if (feeTxs.length > 1)
         return new Validation(false, 'Invalid number of fees')
 
-      if (feeTxs[0].to !== this.miner)
-        return new Validation(false, 'Invalid fee Transaction: belongs to another Miner')
+      if (feeTxs[0].txOutputs.some(txo => txo.toAddress === this.miner))
+        return new Validation(false, 'Invalid fee tx: invalid Miner address')
 
+      // TODO: check fee amount
 
       const validations = this.transactions.map((tx) => tx.isValid())
       const errors = validations.filter((v) => !v.success).map((v) => v.message)
@@ -113,7 +114,7 @@ export default class Block {
     if (this.timestamp < 1) return new Validation(false, 'Invalid timestamp')
     if (previousHash !== this.previousHash)
       return new Validation(false, 'Invalid previous hash')
-    if (!this.nonce || !this.miner) return new Validation(false, 'Not mined')
+    if (this.nonce < 1 || !this.miner) return new Validation(false, 'Not mined')
 
     const prefix = new Array(difficulty + 1).join('0')
     if (this.hash !== this.getHash() || !this.hash.startsWith(prefix))

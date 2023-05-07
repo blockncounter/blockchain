@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import Blockchain from '../lib/blockchain'
 import Block from '../lib/block'
 import Transaction from '../lib/transaction'
+import Wallet from '../lib/wallet'
 dotenv.config()
 
 /* c8 ignore next */
@@ -17,7 +18,8 @@ if (process.argv.includes('--run')) app.use(morgan('tiny'))
 
 app.use(express.json())
 
-const blockchain = new Blockchain()
+const wallet = new Wallet(process.env.BLOCKCHAIN_WALLET)
+const blockchain = new Blockchain(wallet.publicKey)
 
 app.get('/status', (req: Request, res: Response, next: NextFunction) => {
   res.json({

@@ -2,7 +2,7 @@ import Block from './block'
 import Validation from './validation'
 import NextBlockInfo from './types/nextBlockInfo'
 import Transaction from './transaction'
-import TransactionInput from './transactionInput'
+import TransactionOutput from './transactionOutput'
 import TransactionSearch from './types/transactionSearch'
 import { TransactionType } from './types/transactionType'
 
@@ -21,21 +21,32 @@ export default class Blockchain {
   /**
    * Constructor for Blockchain class
    */
-  constructor() {
+  constructor(miner: string) {
+    this.blocks = [this.createGenesisBlock(miner)]
     this.mempool = []
-    this.blocks = [
-      new Block({
-        index: this.nextIndex,
-        previousHash: '0',
-        transactions: [
-          new Transaction({
-            type: TransactionType.FEE,
-            txInput: new TransactionInput(),
-          } as Transaction),
-        ] as Transaction[],
-      } as Block),
-    ]
     this.nextIndex++
+  }
+
+  createGenesisBlock(miner: string): Block {
+    const amount = 10 // TODO: calculate fee amount
+    const tx = new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [
+        new TransactionOutput({
+          amount,
+          toAddress: miner,
+        } as TransactionOutput),
+      ],
+    } as Transaction)
+
+    tx.getHash()
+    tx.txOutputs[0].txHash = tx.hash
+
+    const block = new Block()
+    block.transactions.push(tx)
+    block.mine({ difficulty: this.getDifficulty(), miner })
+
+    return block
   }
 
   getLastBlock(): Block {
@@ -47,20 +58,19 @@ export default class Blockchain {
   }
 
   addTransaction(transaction: Transaction): Validation {
-    if (transaction.txInput) {
-      const from = transaction.txInput.fromAddress
-      const pendingTx = this.mempool.find(
-        /* c8 ignore next */
-        (tx) => tx?.txInput?.fromAddress === from,
-      )
+    if (transaction.txInputs && transaction.txInputs.length) {
+      const from = transaction.txInputs[0].fromAddress
+      const pendingTx = this.mempool
+        .filter((tx) => tx?.txInputs?.length)
+        .map((tx) => tx?.txInputs?.filter((txi) => txi.fromAddress === from))
 
-      if (pendingTx)
+      if (pendingTx && pendingTx.length)
         return new Validation(
           false,
           'Sender wallet already has a pending transaction.',
         )
 
-      // TODO: validate if the sender wallet has enough balance
+      // TODO: validate if the sender wallet has enough balance (UTXO)
     }
 
     const validation = transaction.isValid()
@@ -82,11 +92,13 @@ export default class Blockchain {
   }
 
   addBlock(block: Block): Validation {
-    const lastBlock = this.getLastBlock()
+    const nextBlock = this.getNextBlock()
+    if (!nextBlock) return new Validation(false, 'There is no next block info')
+
     const validation = block.isValid({
-      previousIndex: lastBlock.index,
-      previousHash: lastBlock.hash,
-      difficulty: this.getDifficulty(),
+      previousIndex: nextBlock.index - 1,
+      previousHash: nextBlock.previousHash,
+      difficulty: nextBlock.difficulty,
     })
 
     if (!validation.success)
