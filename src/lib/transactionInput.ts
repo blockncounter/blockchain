@@ -49,7 +49,7 @@ export default class TransactionInput {
     if (!this.signature) return new Validation(false, 'Signature is required')
     if (!this.fromAddress)
       return new Validation(false, 'From Address is required')
-    if (!this.amount || this.amount <= 0)
+    if (!this.amount || this.amount < 1)
       return new Validation(false, 'Amount must be greater than zero')
 
     const hash = Buffer.from(this.getHash(), 'hex')
