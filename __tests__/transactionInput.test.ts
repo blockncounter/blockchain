@@ -15,6 +15,7 @@ describe('Transaction Input tests', () => {
     const txInput = new TransactionInput({
       amount: 10,
       fromAddress: alice.publicKey,
+      previousTxHash: 'abc',
     } as TransactionInput)
     txInput.sign(alice.privateKey)
 

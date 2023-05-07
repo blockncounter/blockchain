@@ -35,14 +35,10 @@ describe('Blockchain Server tests', () => {
   })
 
   test('GET /blocks/:hash - should return Block', async () => {
-    const response = await request(app).get(
-      '/blocks/cbc0401163a8784b7feb36c149d7ce257bf78396251de8429bad39d252578396',
-    )
+    const response = await request(app).get('/blocks/abc')
 
     expect(response.status).toBe(200)
-    expect(response.body.hash).toBe(
-      'cbc0401163a8784b7feb36c149d7ce257bf78396251de8429bad39d252578396',
-    )
+    expect(response.body.hash).toBe('abc')
   })
 
   test('GET /blocks/:index - should NOT return Block', async () => {
