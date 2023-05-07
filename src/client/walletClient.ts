@@ -5,6 +5,7 @@ import readline from 'readline'
 import Wallet from '../lib/wallet'
 import Transaction from '../lib/transaction'
 import TransactionInput from '../lib/transactionInput'
+import TransactionOutput from '../lib/transactionOutput'
 dotenv.config()
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER
@@ -135,16 +136,24 @@ function sendTransaction() {
 
       const tx = new Transaction({
         timestamp: Date.now(),
-        to: recipientWallet,
         type: TransactionType.REGULAR,
-        txInput: new TransactionInput({
-          amount,
-          fromAddress: myWalletPub,
-        } as TransactionInput),
+        txInputs: [
+          new TransactionInput({
+            amount,
+            fromAddress: myWalletPub,
+          } as TransactionInput),
+        ],
+        txOutputs: [
+          new TransactionOutput({
+            amount,
+            toAddress: recipientWallet,
+          } as TransactionOutput),
+        ],
       } as Transaction)
 
-      tx?.txInput?.sign(myWalletPriv)
+      tx.txInputs![0].sign(myWalletPriv)
       tx.hash = tx.getHash()
+      tx.txOutputs[0].txHash = tx.hash
 
       try {
         const txResponse = await axios.post(
