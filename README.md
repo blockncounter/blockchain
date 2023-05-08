@@ -1,5 +1,5 @@
 # Blockchain Prototype - Node.js
-> Under development Proof of Work Blockchain based on Bitcoin architecture. <br>
+> Proof of Work Blockchain based on Bitcoin architecture. <br>
 > Built using Node.js, Express, Jest, and TypeScript. <br>
 
 <br>
@@ -45,11 +45,3 @@ The Transaction class provides the necessary functionality to create and validat
 
 ## Mempool
 A critical component of the Blockchain ecosystem as it enables the transaction processing and confirmation process by providing miners with a pool of valid transactions to choose from. As well as validating new transactions to guarantee it's authenticity and prevent transaction duplication. The Mempool is represented as an array of Transaction objects, defined as an instance variable of the Blockchain class.
-
-<br>
-
-## Under construction ⚒️
-- [X] Wallet implementation
-- [X] Transaction Input
-- [X] Transaction Output
-- [ ] UTXO
