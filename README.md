@@ -49,7 +49,7 @@ A critical component of the Blockchain ecosystem as it enables the transaction p
 <br>
 
 ## Under construction ⚒️
-- [ ] Wallet implementation
-- [ ] Transaction Input
-- [ ] Transaction Output
+- [X] Wallet implementation
+- [X] Transaction Input
+- [X] Transaction Output
 - [ ] UTXO
