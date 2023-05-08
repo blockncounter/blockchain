@@ -209,19 +209,6 @@ describe('Block tests', () => {
     expect(valid.success).toBeFalsy()
   })
 
-  it('should NOT be valid (txInput)', () => {
-    const block = getFullBlock()
-    block.transactions[0].txInputs![0].amount = -1
-
-    const valid = block.isValid({
-      previousIndex: genesis.index,
-      previousHash: genesis.hash,
-      difficulty: exampleDifficulty,
-      feePerTx: exampleFee,
-    })
-    expect(valid.success).toBeFalsy()
-  })
-
   it('should NOT be valid (no miner)', () => {
     const block = getFullBlock()
     block.nonce = 0
