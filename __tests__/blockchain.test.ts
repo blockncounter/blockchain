@@ -13,9 +13,11 @@ jest.mock('../src/lib/transactionInput')
 
 describe('Blockchain tests', () => {
   let alice: Wallet
+  let bob: Wallet
 
   beforeAll(() => {
     alice = new Wallet()
+    bob = new Wallet()
   })
 
   it('should have genesis block', () => {
@@ -185,29 +187,47 @@ describe('Blockchain tests', () => {
   it('should NOT add a Transaction (pending tx)', () => {
     const blockchain = new Blockchain(alice.publicKey)
 
-    const tx = new Transaction({
-      txInputs: [new TransactionInput()],
-      hash: '123',
-    } as Transaction)
-    blockchain.addTransaction(tx)
+    const tx = new Transaction({ hash: '123' } as Transaction)
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTxHash: '123',
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput),
+    ]
+    tx.txOutputs = [
+      new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput),
+    ]
 
-    const tx2 = new Transaction({
-      txInputs: [new TransactionInput()],
-      hash: '1232',
-    } as Transaction)
+    blockchain.mempool.push(tx)
 
-    const validation = blockchain.addTransaction(tx2)
+    const validation = blockchain.addTransaction(tx)
     expect(validation.success).toBeFalsy()
   })
 
   it('should NOT add a Transaction (invalid tx)', () => {
     const blockchain = new Blockchain(alice.publicKey)
+    const txo = blockchain.blocks[0].transactions[0]
 
-    const tx = new Transaction({
-      txInputs: [new TransactionInput()],
-      hash: 'xyz',
-      timestamp: -1,
-    } as Transaction)
+    const tx = new Transaction({ hash: '123', timestamp: -1 } as Transaction)
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTxHash: txo.hash,
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput),
+    ]
+    tx.txOutputs = [
+      new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput),
+    ]
 
     const validation = blockchain.addTransaction(tx)
     expect(validation.success).toBeFalsy()
@@ -215,35 +235,11 @@ describe('Blockchain tests', () => {
 
   it('should NOT add a Transaction (duplicated in Blockchain)', () => {
     const blockchain = new Blockchain(alice.publicKey)
-
-    const tx = new Transaction({
-      txInputs: [new TransactionInput()],
-      hash: '123',
-    } as Transaction)
-
-    blockchain.blocks.push(
-      new Block({
-        transactions: [tx],
-      } as Block),
-    )
+    const tx = blockchain.blocks[0].transactions[0]
 
     const validation = blockchain.addTransaction(tx)
     expect(validation.success).toBeFalsy()
   })
-
-  // it('should NOT add a Transaction (duplicated in Mempool)', () => {
-  //   const blockchain = new Blockchain(alice.publicKey)
-
-  //   const tx = new Transaction({
-  //     txInputs: [new TransactionInput()],
-  //     hash: '123',
-  //   } as Transaction)
-
-  //   blockchain.mempool.push(tx)
-
-  //   const validation = blockchain.addTransaction(tx)
-  //   expect(validation.success).toBeFalsy()
-  // })
 
   it('should get a Transaction (Mempool)', () => {
     const blockchain = new Blockchain(alice.publicKey)
@@ -257,6 +253,29 @@ describe('Blockchain tests', () => {
 
     const result = blockchain.getTransaction(tx.hash)
     expect(result.mempoolIndex).toEqual(0)
+  })
+
+  it('should NOT add a Transaction (invalid UTXO)', () => {
+    const blockchain = new Blockchain(alice.publicKey)
+
+    const tx = new Transaction({ hash: '123' } as Transaction)
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTxHash: 'invalid',
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput),
+    ]
+    tx.txOutputs = [
+      new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput),
+    ]
+
+    const validation = blockchain.addTransaction(tx)
+    expect(validation.success).toBeFalsy()
   })
 
   it('should get a Transaction (Blockchain)', () => {
@@ -282,5 +301,54 @@ describe('Blockchain tests', () => {
     const result = blockchain.getTransaction('xyz')
     expect(result.blockIndex).toEqual(-1)
     expect(result.mempoolIndex).toEqual(-1)
+  })
+
+  it('should get balance', () => {
+    const blockchain = new Blockchain(alice.publicKey)
+    const balance = blockchain.getBalance(alice.publicKey)
+
+    expect(balance).toBeGreaterThan(0)
+  })
+
+  it('should get zero as balance', () => {
+    const blockchain = new Blockchain(alice.publicKey)
+    const balance = blockchain.getBalance(bob.publicKey)
+
+    expect(balance).toEqual(0)
+  })
+
+  it('should get UTXO', () => {
+    const blockchain = new Blockchain(alice.publicKey)
+    const txo = blockchain.blocks[0].transactions[0]
+
+    const tx = new Transaction({ hash: '123' } as Transaction)
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTxHash: txo.hash,
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput),
+    ]
+    tx.txOutputs = [
+      new TransactionOutput({
+        amount: 5,
+        toAddress: 'abc',
+      } as TransactionOutput),
+      new TransactionOutput({
+        amount: 4,
+        toAddress: alice.publicKey,
+      } as TransactionOutput),
+    ]
+
+    blockchain.blocks.push(
+      new Block({
+        index: 1,
+        transactions: [tx],
+      } as Block),
+    )
+
+    const utxo = blockchain.getUTXO(alice.publicKey)
+    expect(utxo.length).toBeGreaterThan(0)
   })
 })

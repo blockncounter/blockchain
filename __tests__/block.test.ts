@@ -224,6 +224,36 @@ describe('Block tests', () => {
     expect(valid.success).toBeFalsy()
   })
 
+  it('should NOT be valid (invalid miner address)', () => {
+    const block = getFullBlock()
+    block.miner = 'invalid'
+
+    block.hash = block.getHash()
+
+    const valid = block.isValid({
+      previousIndex: genesis.index,
+      previousHash: genesis.hash,
+      difficulty: exampleDifficulty,
+      feePerTx: exampleFee,
+    })
+    expect(valid.success).toBeFalsy()
+  })
+
+  it('should NOT be valid (invalid timestamp)', () => {
+    const block = getFullBlock()
+    block.timestamp = -1
+
+    block.hash = block.getHash()
+
+    const valid = block.isValid({
+      previousIndex: genesis.index,
+      previousHash: genesis.hash,
+      difficulty: exampleDifficulty,
+      feePerTx: exampleFee,
+    })
+    expect(valid.success).toBeFalsy()
+  })
+
   it('should NOT be valid (invalid hash)', () => {
     const block = getFullBlock()
     block.hash = '23rdsadaa'

@@ -93,15 +93,15 @@ export default class Transaction {
           false,
           'Invalid tx: input amount is less than output amount',
         )
+    }
 
-      if (this.txOutputs.some((txo) => txo.txHash !== this.hash))
-        return new Validation(false, 'Invalid TXO reference hash')
+    if (this.txOutputs.some((txo) => txo.txHash !== this.hash))
+      return new Validation(false, 'Invalid TXO reference hash')
 
-      if (this.type === TransactionType.FEE) {
-        const txo = this.txOutputs[0]
-        if (txo.amount !== Blockchain.getRewardAmount(difficulty) + totalFees)
-          return new Validation(false, 'Invalid fee amount')
-      }
+    if (this.type === TransactionType.FEE) {
+      const txo = this.txOutputs[0]
+      if (txo.amount > Blockchain.getRewardAmount(difficulty) + totalFees)
+        return new Validation(false, 'Invalid fee amount')
     }
 
     return new Validation()

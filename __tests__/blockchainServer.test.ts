@@ -88,4 +88,11 @@ describe('Blockchain Server tests', () => {
 
     expect(response.status).toBe(201)
   })
+
+  test('GET /wallets/:wallet - should get balance', async () => {
+    const response = await request(app).get('/wallets/abc')
+
+    expect(response.status).toBe(200)
+    expect(response.body.balance).toEqual(10)
+  })
 })
