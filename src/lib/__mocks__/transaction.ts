@@ -25,10 +25,23 @@ export default class Transaction {
     return 'abc'
   }
 
-  isValid(): Validation {
-    if (this.timestamp < 1 || !this.hash)
+  isValid(difficulty: number, totalFees: number): Validation {
+    if (this.timestamp < 1 || !this.hash || !difficulty || !totalFees)
       return new Validation(false, 'Invalid mock Transaction')
 
     return new Validation()
+  }
+
+  static fromReward(txo: TransactionOutput): Transaction {
+    const tx = new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [txo],
+    } as Transaction)
+
+    tx.txInputs = undefined
+    tx.hash = tx.getHash()
+    tx.txOutputs[0].txHash = tx.hash
+
+    return tx
   }
 }

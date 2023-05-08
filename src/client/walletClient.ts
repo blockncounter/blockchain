@@ -1,4 +1,3 @@
-import { TransactionType } from './../lib/types/transactionType'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import readline from 'readline'
@@ -185,7 +184,7 @@ function sendTransaction() {
           tx,
         )
         console.log(
-          '\nTransaction sent successfully! Waiting for confirmation...\n',
+          '\nTransaction successfully created! Waiting for confirmation...\n',
         )
         console.log(`Hash: ${txResponse.data.hash}`)
         preMenu()

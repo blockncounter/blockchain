@@ -2,10 +2,10 @@ import Block from './block'
 import Validation from './validation'
 import NextBlockInfo from './types/nextBlockInfo'
 import Transaction from './transaction'
+import TransactionInput from './transactionInput'
 import TransactionOutput from './transactionOutput'
 import TransactionSearch from './types/transactionSearch'
 import { TransactionType } from './types/transactionType'
-import TransactionInput from './transactionInput'
 
 /**
  * Blockchain class
@@ -30,16 +30,13 @@ export default class Blockchain {
   }
 
   createGenesisBlock(miner: string): Block {
-    const amount = 10 // TODO: calculate fee amount
-    const tx = new Transaction({
-      type: TransactionType.FEE,
-      txOutputs: [
-        new TransactionOutput({
-          amount,
-          toAddress: miner,
-        } as TransactionOutput),
-      ],
-    } as Transaction)
+    const amount = Blockchain.getRewardAmount(this.getDifficulty())
+    const tx = Transaction.fromReward(
+      new TransactionOutput({
+        amount,
+        toAddress: miner,
+      } as TransactionOutput),
+    )
 
     tx.getHash()
     tx.txOutputs[0].txHash = tx.hash
@@ -90,8 +87,10 @@ export default class Blockchain {
       }
     }
 
-    // TODO: create final version for fee validation
-    const validation = transaction.isValid()
+    const validation = transaction.isValid(
+      this.getDifficulty(),
+      this.getFeePerTx(),
+    )
     if (!validation.success)
       return new Validation(false, `Invalid transaction: ${validation.message}`)
 
@@ -117,6 +116,7 @@ export default class Blockchain {
       previousIndex: nextBlock.index - 1,
       previousHash: nextBlock.previousHash,
       difficulty: nextBlock.difficulty,
+      feePerTx: nextBlock.feePerTx,
     })
 
     if (!validation.success)
@@ -175,6 +175,7 @@ export default class Blockchain {
         previousIndex: previousBlock.index,
         previousHash: previousBlock.hash,
         difficulty: this.getDifficulty(),
+        feePerTx: this.getFeePerTx(),
       })
       if (!validation.success)
         return new Validation(
@@ -241,5 +242,9 @@ export default class Blockchain {
     if (!utxo || !utxo.length) return 0
 
     return utxo.reduce((acc, txo) => acc + txo.amount, 0)
+  }
+
+  static getRewardAmount(difficulty: number): number {
+    return (64 - difficulty) * 10
   }
 }

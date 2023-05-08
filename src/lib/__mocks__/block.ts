@@ -41,8 +41,12 @@ export default class Block {
    * Validates the Mock Block
    * @returns {boolean} Returns true if the Mock Block is valid
    */
-  isValid({ previousIndex, previousHash }: isValidParams): Validation {
-    if (!previousHash || previousIndex < 0 || this.index < 1)
+  isValid({
+    previousIndex,
+    previousHash,
+    feePerTx,
+  }: isValidParams): Validation {
+    if (!previousHash || previousIndex < 0 || this.index < 1 || feePerTx < 1)
       return new Validation(false, 'Invalid Mock Block')
 
     return new Validation()

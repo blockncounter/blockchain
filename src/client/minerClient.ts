@@ -4,8 +4,8 @@ import Wallet from '../lib/wallet'
 import NextBlockInfo from '../lib/types/nextBlockInfo'
 import Block from '../lib/block'
 import Transaction from '../lib/transaction'
-import { TransactionType } from '../lib/types/transactionType'
 import TransactionOutput from '../lib/transactionOutput'
+import Blockchain from '../lib/blockchain'
 dotenv.config()
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER
@@ -15,21 +15,34 @@ console.log(`Logged as ${minerWallet.publicKey}`)
 
 let totalMined = 0
 
-function getRewardTx(): Transaction {
+function getRewardTx(
+  nextBlockInfo: NextBlockInfo,
+  nextBlock: Block,
+): Transaction | undefined {
+  let amount = 0
+
+  if (nextBlockInfo.difficulty <= nextBlockInfo.maxDifficulty)
+    amount += Blockchain.getRewardAmount(nextBlockInfo.difficulty)
+
+  const fees = nextBlock.transactions
+    .map((tx) => tx.getFee())
+    .reduce((a, b) => a + b)
+  const feeCheck = nextBlock.transactions.length * nextBlockInfo.feePerTx
+  if (fees < feeCheck) {
+    console.log('Fees are lower than expected amount. Awaiting next block...')
+    setTimeout(() => {
+      mine()
+    }, 5000)
+    return
+  }
+  amount += fees
+
   const txo = new TransactionOutput({
     toAddress: minerWallet.publicKey,
-    amount: 10,
+    amount,
   } as TransactionOutput)
 
-  const tx = new Transaction({
-    txOutputs: [txo],
-    type: TransactionType.FEE,
-  } as Transaction)
-
-  tx.hash = tx.getHash()
-  tx.txOutputs[0].txHash = tx.hash
-
-  return tx
+  return Transaction.fromReward(txo)
 }
 
 async function mine() {
@@ -42,10 +55,14 @@ async function mine() {
       mine()
     }, 5000)
   }
-  const nextBlockInfo = data as NextBlockInfo
 
+  const nextBlockInfo = data as NextBlockInfo
   const newBlock = Block.fromNextBlockInfo(nextBlockInfo)
-  newBlock.transactions.push(getRewardTx())
+  const tx = getRewardTx(nextBlockInfo, newBlock)
+
+  if (!tx) return
+
+  newBlock.transactions.push(tx)
   newBlock.miner = minerWallet.publicKey
   newBlock.hash = newBlock.getHash()
 
